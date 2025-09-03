@@ -90,6 +90,16 @@ def check():
         "expires": token.expires.isoformat() if token.expires else None
     })
 
+# --- Reset route (temporary, for reseeding tokens) ---
+@app.route("/reset-tokens")
+def reset_tokens():
+    try:
+        Token.query.delete()
+        db.session.commit()
+        return {"status": "✅ Tokens cleared. Redeploy to reseed."}
+    except Exception as e:
+        return {"status": "❌ Failed", "error": str(e)}
+
 # Dev server (Render uses gunicorn; this only runs locally)
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")))
